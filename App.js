@@ -6,6 +6,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Linking,
 } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
@@ -19,7 +20,7 @@ export default function App() {
       customer: "Prsn",
       ctc: 981315321,
       prds: 3,
-      os: "pending",
+      os: "completed",
       ps: "pending",
     },
     {
@@ -55,10 +56,22 @@ export default function App() {
       customer: "Prsn",
       ctc: 938239032,
       prds: 8,
-      os: "pending",
+      os: "completed",
       ps: "pending",
     },
   ];
+
+  const [allData, setAllData] = useState(myData);
+
+  const filterData = (orderType) => {
+    if (orderType === "all") {
+      setAllData(myData);
+    }
+    if (orderType === "pending") {
+      const newData = myData.filter((datas) => datas.os === "pending");
+      setAllData(newData);
+    }
+  };
 
   const slideNav = () => {
     if (navRight === 0) {
@@ -70,11 +83,22 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={[styles.bar, { right: navRight }]}>
-        <Text>All Orders</Text>
-        <Text>Assigned Orders</Text>
-        <Text>Pending Orders</Text>
-        <Text>Cancelled Orders</Text>
-        <Text>Completed Orders</Text>
+        <TouchableOpacity onPress={() => filterData("all")}>
+          <Text>All Orders</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text>Assigned Orders</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => filterData("pending")}>
+          <Text>Pending Orders</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text>Cancelled Orders</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text>Completed Orders</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={{ position: "absolute", top: 20, right: 20 }}
           onPress={slideNav}
@@ -90,18 +114,24 @@ export default function App() {
           <FontAwesomeIcon icon={faBars} size={28} />
         </TouchableOpacity>
       </View>
-      <ScrollView>
+      <ScrollView style={{ width: "100%" }}>
         <View style={styles.section}>
-          {myData.map((data, index) => {
+          {allData.map((data, index) => {
             return (
               <View key={index} style={styles.orders}>
                 <Text>{data.store}</Text>
                 <Text>Total Amount: {data.amt}</Text>
                 <Text>Customer Name: {data.customer}</Text>
                 <Text>Primary Contact: {data.ctc}</Text>
-                <Text>Total Products{data.prds}</Text>
+                <Text>Total Products: {data.prds}</Text>
                 <Text>Order Status: {data.os}</Text>
                 <Text>Payment Status: {data.ps}</Text>
+                <Text
+                  style={{ color: "blue", textAlign: "center", marginTop: 10 }}
+                  onPress={() => Linking.openURL("https://www.google.com/maps")}
+                >
+                  View Map
+                </Text>
               </View>
             );
           })}
@@ -154,12 +184,12 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   section: {
+    width: "100%",
     flex: 1,
-    marginTop: 20,
+    padding: 25,
   },
   orders: {
     flex: 1,
-    width: 240,
     padding: 10,
     borderWidth: 2,
     borderColor: "gray",
